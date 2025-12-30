@@ -34,6 +34,8 @@ public class GreedySubtreeMatcher extends AbstractSubtreeMatcher {
     public void handleAmbiguousMappings(List<Pair<Set<Tree>, Set<Tree>>> ambiguousMappings) {
         MappingComparators.FullMappingComparator comparator = new MappingComparators.FullMappingComparator(mappings);
         ambiguousMappings.sort(new AmbiguousMappingsComparator());
+        //TODO：在此添加逻辑，计算平均耗时减少了多少
+        //TODO: 再其他地方添加逻辑，计算预匹配耗时，作为对比
         ambiguousMappings.forEach((pair) -> {
             List<Mapping> candidates = convertToMappings(pair);
             candidates.sort(comparator);
@@ -48,6 +50,8 @@ public class GreedySubtreeMatcher extends AbstractSubtreeMatcher {
         List<Mapping> mappings = new ArrayList<>();
         for (Tree src : ambiguousMapping.first)
             for (Tree dst : ambiguousMapping.second)
+                //TODO: 在此添加逻辑，当且仅当src和dst不构成映射时不添加
+                //TODO: 在此添加逻辑，计算平均减少了多少次配对
                 mappings.add(new Mapping(src, dst));
         return mappings;
     }
