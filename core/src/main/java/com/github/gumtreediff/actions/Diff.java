@@ -55,15 +55,21 @@ public class Diff {
     public final EditScript editScript;
 
     /**
+     * Only output mappings without computing edit script.
+     */
+    public final Boolean onlyMatch;
+
+    /**
      * Instantiate a diff object with the provided source and destination
      * ASTs, the provided mappings, and the provided editScript.
      */
     public Diff(TreeContext src, TreeContext dst,
-                MappingStore mappings, EditScript editScript) {
+                MappingStore mappings, EditScript editScript, Boolean onlyMatch) {
         this.src = src;
         this.dst = dst;
         this.mappings = mappings;
         this.editScript = editScript;
+        this.onlyMatch = onlyMatch;
     }
 
     /**
@@ -73,24 +79,45 @@ public class Diff {
      * @param treeGenerator The id of the tree generator to use.
      * @param matcher The id of the the matcher to use.
      * @param properties The set of options.
+     * @param onlyMatch If true, only compute mappings without computing edit script.
      * @throws IOException an IO exception is raised in case of IO problems related to the source
      *     or destination file.
      */
     public static Diff compute(String srcFile, String dstFile, String treeGenerator,
-                               String matcher, GumtreeProperties properties) throws IOException {
+                               String matcher, GumtreeProperties properties, Boolean onlyMatch) throws IOException {
         TreeContext src = TreeGenerators.getInstance().getTree(srcFile, treeGenerator);
         TreeContext dst = TreeGenerators.getInstance().getTree(dstFile, treeGenerator);
 
-        return compute(src, dst, treeGenerator, matcher, properties);
+        return compute(src, dst, treeGenerator, matcher, properties, onlyMatch);
     }
 
     private static Diff compute(TreeContext src, TreeContext dst, String treeGenerator,
-                               String matcher, GumtreeProperties properties) throws IOException {
+                               String matcher, GumtreeProperties properties, Boolean onlyMatch) throws IOException {
         Matcher m = Matchers.getInstance().getMatcherWithFallback(matcher);
         m.configure(properties);
+
+        // long matchStartTime = System.nanoTime();
+
         MappingStore mappings = m.match(src.getRoot(), dst.getRoot());
+
+        // long matchEndTime = System.nanoTime();
+        // long matchTimeMillis = (matchEndTime - matchStartTime) / 1_000_000;
+        // System.out.println("Match 阶段耗时: " + matchTimeMillis + " ms");
+        
+        if (onlyMatch) {
+            return new Diff(src, dst, mappings, null, onlyMatch);
+        }
+
+        // 记录生成操作阶段开始时间
+        // long actionsStartTime = System.nanoTime();
+
         EditScript editScript = new SimplifiedChawatheScriptGenerator().computeActions(mappings);
-        return new Diff(src, dst, mappings, editScript);
+
+        // long actionsEndTime = System.nanoTime();
+        // long actionsTimeMillis = (actionsEndTime - actionsStartTime) / 1_000_000;
+        // System.out.println("生成操作阶段耗时: " + actionsTimeMillis + " ms");
+
+        return new Diff(src, dst, mappings, editScript, onlyMatch);
     }
 
     /**
@@ -100,14 +127,15 @@ public class Diff {
      * @param treeGenerator The id of the tree generator to use.
      * @param matcher The id of the the matcher to use.
      * @param properties The set of options.
+     * @param onlyMatch If true, only compute mappings without computing edit script.
      * @throws IOException an IO exception is raised in case of IO problems related to the source
      *     or destination file.
      */
     public static Diff compute(Reader srcReader, Reader dstReader, String treeGenerator,
-                               String matcher, GumtreeProperties properties) throws IOException {
+                               String matcher, GumtreeProperties properties, Boolean onlyMatch) throws IOException {
         TreeContext src = TreeGenerators.getInstance().getTree(srcReader, treeGenerator);
         TreeContext dst = TreeGenerators.getInstance().getTree(dstReader, treeGenerator);
-        return compute(src, dst, treeGenerator, matcher, properties);
+        return compute(src, dst, treeGenerator, matcher, properties, onlyMatch);
     }
 
     /**
@@ -121,14 +149,35 @@ public class Diff {
      *     or destination file.
      */
     public static Diff computeWithCommand(String srcFile, String dstFile, String command,
-                               String matcher, GumtreeProperties properties) throws IOException {
+                               String matcher, GumtreeProperties properties, Boolean onlyMatch) throws IOException {
         TreeContext src = TreeGenerators.getInstance().getTreeFromCommand(srcFile, command);
         TreeContext dst = TreeGenerators.getInstance().getTreeFromCommand(dstFile, command);
         Matcher m = Matchers.getInstance().getMatcherWithFallback(matcher);
         m.configure(properties);
+
+        // 记录 match 阶段开始时间
+        // long matchStartTime = System.nanoTime();
+
         MappingStore mappings = m.match(src.getRoot(), dst.getRoot());
+
+        // long matchEndTime = System.nanoTime();
+        // long matchTimeMillis = (matchEndTime - matchStartTime) / 1_000_000;
+        // System.out.println("Match 阶段耗时: " + matchTimeMillis + " ms");
+
+        if (onlyMatch) {
+            return new Diff(src, dst, mappings, null, onlyMatch);
+        }
+
+        // 记录生成操作阶段开始时间
+        // long actionsStartTime = System.nanoTime();
+
         EditScript editScript = new SimplifiedChawatheScriptGenerator().computeActions(mappings);
-        return new Diff(src, dst, mappings, editScript);
+
+        // long actionsEndTime = System.nanoTime();
+        // long actionsTimeMillis = (actionsEndTime - actionsStartTime) / 1_000_000;
+        // System.out.println("生成操作阶段耗时: " + actionsTimeMillis + " ms");
+
+        return new Diff(src, dst, mappings, editScript, onlyMatch);
     }
 
     /**
@@ -137,12 +186,13 @@ public class Diff {
      * @param dstFile The path to the destination file.
      * @param treeGenerator The id of the tree generator to use.
      * @param matcher The id of the the matcher to use.
+     * @param onlyMatch If true, only compute mappings without computing edit script.
      * @throws IOException an IO exception is raised in case of IO problems related to the source
      *     or destination file.
      */
     public static Diff compute(String srcFile, String dstFile,
-                               String treeGenerator, String matcher) throws IOException {
-        return compute(srcFile, dstFile, treeGenerator, matcher, new GumtreeProperties());
+                               String treeGenerator, String matcher, Boolean onlyMatch) throws IOException {
+        return compute(srcFile, dstFile, treeGenerator, matcher, new GumtreeProperties(), onlyMatch);
     }
 
     /**
@@ -154,7 +204,7 @@ public class Diff {
      *     or destination file.
      */
     public static Diff compute(String srcFile, String dstFile) throws IOException {
-        return compute(srcFile, dstFile, null, null);
+        return compute(srcFile, dstFile, null, null, false);
     }
 
     /**

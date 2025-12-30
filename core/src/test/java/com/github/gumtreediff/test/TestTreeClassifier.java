@@ -49,7 +49,7 @@ public class TestTreeClassifier {
         ms.addMapping(src.getChild(4), dst.getChild(3));
         ms.addMapping(src.getChild("4.0"), dst.getChild("3.0.0.0"));
         EditScript actions = new SimplifiedChawatheScriptGenerator().computeActions(ms);
-        Diff diff = new Diff(trees.first, trees.second, ms, actions);
+        Diff diff = new Diff(trees.first, trees.second, ms, actions, false);
         TreeClassifier c = diff.createAllNodeClassifier();
         assertThat(c.getUpdatedSrcs(), hasSize(1));
         assertThat(c.getUpdatedSrcs(), hasItems(
@@ -86,7 +86,7 @@ public class TestTreeClassifier {
         ms.addMapping(src.getChild(4), dst.getChild(3));
         ms.addMapping(src.getChild("4.0"), dst.getChild("3.0.0.0"));
         EditScript actions = new SimplifiedChawatheScriptGenerator().computeActions(ms);
-        Diff diff = new Diff(trees.first, trees.second, ms, actions);
+        Diff diff = new Diff(trees.first, trees.second, ms, actions, false);
         TreeClassifier c = diff.createRootNodesClassifier();
         assertThat(c.getUpdatedSrcs(), hasSize(1));
         assertThat(c.getUpdatedSrcs(), hasItems(

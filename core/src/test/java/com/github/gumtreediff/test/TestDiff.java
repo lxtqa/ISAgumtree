@@ -59,11 +59,11 @@ public class TestDiff {
         FileReader target = new FileReader(PATH_DUMMY_FILE);
 
         Diff resultWithReader = Diff.compute(source, target, TREE_GENERATOR_ID, MATCHER_ID,
-                new GumtreeProperties());
+                new GumtreeProperties(),false);
 
         Diff resultWithFiles = Diff.compute(PATH_DUMMY_FILE, PATH_DUMMY_FILE, "xml",
                 "gumtree-simple",
-                new GumtreeProperties());
+                new GumtreeProperties(),false);
 
         assertEquals(resultWithFiles.mappings.size(), resultWithReader.mappings.size());
 

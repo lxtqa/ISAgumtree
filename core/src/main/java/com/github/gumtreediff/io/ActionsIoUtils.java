@@ -99,6 +99,11 @@ public final class ActionsIoUtils {
             }
             fmt.endMatches();
 
+            if (this.actions == null) {
+                // Finish up
+                fmt.endOutput();
+                return;
+            }
             // Write the actions
             fmt.startActions();
             for (Action a : actions) {

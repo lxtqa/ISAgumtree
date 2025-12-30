@@ -61,6 +61,9 @@ public abstract class AbstractSubtreeMatcher implements Matcher {
         PriorityTreeQueue srcTrees = new DefaultPriorityTreeQueue(src, this.minPriority, this.priorityCalculator);
         PriorityTreeQueue dstTrees = new DefaultPriorityTreeQueue(dst, this.minPriority, this.priorityCalculator);
 
+        // 整个match开始计时
+        // long matchStartTime = System.nanoTime();
+
         while (PriorityTreeQueue.synchronize(srcTrees, dstTrees)) {
             var localHashMappings = new HashBasedMapper();
             localHashMappings.addSrcs(srcTrees.pop());
@@ -79,7 +82,25 @@ public abstract class AbstractSubtreeMatcher implements Matcher {
             });
         }
 
+        // 模糊匹配开始计时
+        // long ambiguousStartTime = System.nanoTime();
+
         handleAmbiguousMappings(ambiguousMappings);
+
+        // // 模糊匹配结束计时
+        // long ambiguousEndTime = System.nanoTime();
+
+        // // 整个match结束计时
+        // long matchEndTime = System.nanoTime();
+
+        // long totalMatchTimeMillis = (matchEndTime - matchStartTime) / 1_000_000;
+        // long ambiguousTimeMillis = (ambiguousEndTime - ambiguousStartTime) / 1_000_000;
+
+        // double ambiguousRatio = (double) ambiguousTimeMillis / totalMatchTimeMillis * 100;
+
+        // System.out.println("match总耗时: " + totalMatchTimeMillis + " ms");
+        // System.out.println("模糊匹配耗时: " + ambiguousTimeMillis + " ms");
+        // System.out.println("模糊匹配占比: " + String.format("%.2f", ambiguousRatio) + " %");
         return this.mappings;
     }
 
