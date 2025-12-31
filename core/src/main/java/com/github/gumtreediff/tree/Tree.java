@@ -34,6 +34,10 @@ public interface Tree {
 
     int NO_POS = -1;
 
+    public int getFuncId();
+
+    public void setFuncId(int funcId);
+
     /**
      * Returns a list containing the node and its descendants, ordered using a pre-order.
      *

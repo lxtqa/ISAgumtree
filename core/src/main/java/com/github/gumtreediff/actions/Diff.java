@@ -26,6 +26,7 @@ import com.github.gumtreediff.matchers.MappingStore;
 import com.github.gumtreediff.matchers.Matcher;
 import com.github.gumtreediff.matchers.Matchers;
 import com.github.gumtreediff.tree.TreeContext;
+import com.github.gumtreediff.actions.PreMatcher;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -93,6 +94,7 @@ public class Diff {
 
     private static Diff compute(TreeContext src, TreeContext dst, String treeGenerator,
                                String matcher, GumtreeProperties properties, Boolean onlyMatch) throws IOException {
+        PreMatcher.preprocess(src, dst);
         Matcher m = Matchers.getInstance().getMatcherWithFallback(matcher);
         m.configure(properties);
 
@@ -152,6 +154,9 @@ public class Diff {
                                String matcher, GumtreeProperties properties, Boolean onlyMatch) throws IOException {
         TreeContext src = TreeGenerators.getInstance().getTreeFromCommand(srcFile, command);
         TreeContext dst = TreeGenerators.getInstance().getTreeFromCommand(dstFile, command);
+        
+        PreMatcher.preprocess(src, dst);
+
         Matcher m = Matchers.getInstance().getMatcherWithFallback(matcher);
         m.configure(properties);
 

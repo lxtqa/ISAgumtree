@@ -31,6 +31,8 @@ public abstract class AbstractTree implements Tree {
 
     protected TreeMetrics metrics;
 
+    protected int funcId = -1;
+
     @Override
     public String toString() {
         if (hasLabel())
@@ -54,6 +56,16 @@ public abstract class AbstractTree implements Tree {
     @Override
     public void setParent(Tree parent) {
         this.parent = parent;
+    }
+
+    @Override
+    public int getFuncId() {
+        return funcId;
+    }
+
+    @Override
+    public void setFuncId(int funcId) {
+        this.funcId = funcId;
     }
 
     @Override
