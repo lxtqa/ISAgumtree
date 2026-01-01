@@ -17,3 +17,5 @@ build/
 out/
 .vagrant/
 .DS_Store
+build.sh
+test/

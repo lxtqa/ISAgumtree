@@ -94,7 +94,11 @@ public class Diff {
 
     private static Diff compute(TreeContext src, TreeContext dst, String treeGenerator,
                                String matcher, GumtreeProperties properties, Boolean onlyMatch) throws IOException {
+        // long matchStartTime = System.nanoTime();
         PreMatcher.preprocess(src, dst);
+        // long matchEndTime = System.nanoTime();
+        // long matchTimeMillis = (matchEndTime - matchStartTime) / 1_000_000;
+        // System.out.println("PreMatch 阶段耗时: " + matchTimeMillis + " ms");
         Matcher m = Matchers.getInstance().getMatcherWithFallback(matcher);
         m.configure(properties);
 
@@ -154,9 +158,11 @@ public class Diff {
                                String matcher, GumtreeProperties properties, Boolean onlyMatch) throws IOException {
         TreeContext src = TreeGenerators.getInstance().getTreeFromCommand(srcFile, command);
         TreeContext dst = TreeGenerators.getInstance().getTreeFromCommand(dstFile, command);
-        
+        long matchStartTime = System.nanoTime();
         PreMatcher.preprocess(src, dst);
-
+        long matchEndTime = System.nanoTime();
+        long matchTimeMillis = (matchEndTime - matchStartTime) / 1_000_000;
+        System.out.println("PreMatch 阶段耗时: " + matchTimeMillis + " ms");
         Matcher m = Matchers.getInstance().getMatcherWithFallback(matcher);
         m.configure(properties);
 

@@ -21,6 +21,7 @@
 package com.github.gumtreediff.actions;
 
 import com.github.gumtreediff.tree.Tree;
+import com.github.gumtreediff.tree.Type;
 import com.github.gumtreediff.tree.TreeContext;
 
 import java.util.*;
@@ -74,34 +75,33 @@ public class PreMatcher {
         }
     }
 
-    /**
-     * Assign integer IDs to functions with the same name
-     * appearing in src and/or dst.
-     */
     private static void assignFunctionIds(
             List<Tree> srcFuncs,
             List<Tree> dstFuncs,
             Map<String, Integer> functionNameToId) {
 
-        int nextId = 1;
-
-        // Collect all function names
-        Set<String> names = new HashSet<>();
+        Set<String> srcNames = new HashSet<>();
         for (Tree t : srcFuncs) {
             String name = getFunctionName(t);
             if (name != null) {
-                names.add(name);
-            }
-        }
-        for (Tree t : dstFuncs) {
-            String name = getFunctionName(t);
-            if (name != null) {
-                names.add(name);
+                srcNames.add(name);
             }
         }
 
-        // Assign IDs
-        for (String name : names) {
+        Set<String> dstNames = new HashSet<>();
+        for (Tree t : dstFuncs) {
+            String name = getFunctionName(t);
+            if (name != null) {
+                dstNames.add(name);
+            }
+        }
+
+        // ⭐ 只取同时出现在 src 和 dst 中的函数名
+        Set<String> commonNames = new HashSet<>(srcNames);
+        commonNames.retainAll(dstNames);
+
+        int nextId = 1;
+        for (String name : commonNames) {
             functionNameToId.put(name, nextId++);
         }
     }
@@ -142,9 +142,19 @@ public class PreMatcher {
      * Extract function name from a function declaration node.
      */
     private static String getFunctionName(Tree node) {
+        String functionName = "";
         for (Tree child : node.getChildren()) {
-            if (child.getType() != null && child.getType().toString().equals("name")) {
-                return child.getLabel();
+            if (child.getType() != Type.NO_TYPE && child.getType().toString().equals("name")) {
+                if (child.getLabel() != Tree.NO_LABEL) {
+                    return child.getLabel();
+                }
+                else {
+                    for (Tree gc : child.getChildren()) {
+                        if (gc.getLabel() != Tree.NO_LABEL)
+                            functionName += gc.getLabel();
+                    }
+                    return functionName;
+                }
             }
         }
         return null;
