@@ -20,7 +20,10 @@
 
 package com.github.gumtreediff.matchers.heuristic.gt;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
 
 import com.github.gumtreediff.matchers.Mapping;
 import com.github.gumtreediff.tree.Tree;
@@ -52,23 +55,13 @@ public class GreedySubtreeMatcher extends AbstractSubtreeMatcher {
         // Integer total = ambiguousMapping.first.size() * ambiguousMapping.second.size();
         for (Tree src : ambiguousMapping.first)
             for (Tree dst : ambiguousMapping.second)
-                //TODO: 在此添加逻辑，当且仅当src和dst不构成映射时不添加
                 if (src.getFuncId() == dst.getFuncId() || dst.getFuncId() == -1 || src.getFuncId() == -1)
                     mappings.add(new Mapping(src, dst));
                 // else
                 //     count += 1;
-                //TODO: 在此添加逻辑，计算平均减少了多少次配对
         // System.out.println("Reduced " + count + " in " + total + " invalid mapping attempts based on function IDs.");
         return mappings;
     }
-
-    // public static final List<Mapping> convertToMappings(Pair<Set<Tree>, Set<Tree>> ambiguousMapping) {
-    //     List<Mapping> mappings = new ArrayList<>();
-    //     for (Tree src : ambiguousMapping.first)
-    //         for (Tree dst : ambiguousMapping.second)
-    //             mappings.add(new Mapping(src, dst));
-    //     return mappings;
-    // }
 
     public static class AmbiguousMappingsComparator implements Comparator<Pair<Set<Tree>, Set<Tree>>> {
         @Override

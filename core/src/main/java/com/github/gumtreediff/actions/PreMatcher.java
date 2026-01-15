@@ -20,11 +20,16 @@
 
 package com.github.gumtreediff.actions;
 
-import com.github.gumtreediff.tree.Tree;
-import com.github.gumtreediff.tree.Type;
-import com.github.gumtreediff.tree.TreeContext;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import java.util.*;
+import com.github.gumtreediff.tree.Tree;
+import com.github.gumtreediff.tree.TreeContext;
+import com.github.gumtreediff.tree.Type;
 
 /**
  * PreMatcher performs a preprocessing step on TreeContexts
@@ -43,18 +48,7 @@ public class PreMatcher {
     public static void preprocess(TreeContext src, TreeContext dst) {
         // 1. Extract function declarations
         List<Tree> srcFuncs = extractFunctionDecls(src.getRoot());
-        // ⭐ 调试输出：紧跟在 srcFuncs 获取之后
-        // System.out.println("--- Debug: Functions extracted from SRC ---");
-        // for (Tree t : srcFuncs) {
-        //     System.out.println("  Name: " + getFunctionName(t) + " [Type: " + t.getType() + "]");
-        // }
-        // 现在再声明 dstFuncs，缩短它到后续使用的距离
         List<Tree> dstFuncs = extractFunctionDecls(dst.getRoot());
-        // System.out.println("--- Debug: Functions extracted from DST ---");
-        // for (Tree t : dstFuncs) {
-        //     System.out.println("  Name: " + getFunctionName(t) + " [Type: " + t.getType() + "]");
-        // }
-        // System.out.println("-------------------------------------------");
 
         // 2. Match functions by name and assign IDs
         Map<String, Integer> functionNameToId = new HashMap<>();
@@ -119,17 +113,6 @@ public class PreMatcher {
         for (String name : commonNames) {
             functionNameToId.put(name, nextId++);
         }
-
-        // // ⭐ 新增输出部分：打印所有构成映射的函数名及其 ID
-        // if (!functionNameToId.isEmpty()) {
-        //     System.out.println("=== Matched Functions (PreMatcher) ===");
-        //     // 按 ID 排序输出，方便查看
-        //     functionNameToId.entrySet().stream()
-        //             .sorted(Map.Entry.comparingByValue())
-        //             .forEach(entry -> System.out.printf("ID: %d | Function Name: %s%n", 
-        //                     entry.getValue(), entry.getKey()));
-        //     System.out.println("======================================");
-        // }
     }
 
     /**
@@ -139,7 +122,7 @@ public class PreMatcher {
     private static void tagFunctions(
             List<Tree> funcs,
             Map<String, Integer> functionNameToId) {
-    
+
         // 按照节点在树中的深度（Depth）降序排序
         // 深度大的节点（子函数）先处理，深度小的节点（父函数）后处理
         funcs.sort((a, b) -> Integer.compare(b.getMetrics().depth, a.getMetrics().depth));

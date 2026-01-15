@@ -20,16 +20,15 @@
 
 package com.github.gumtreediff.actions;
 
+import java.io.IOException;
+import java.io.Reader;
+
 import com.github.gumtreediff.gen.TreeGenerators;
 import com.github.gumtreediff.matchers.GumtreeProperties;
 import com.github.gumtreediff.matchers.MappingStore;
 import com.github.gumtreediff.matchers.Matcher;
 import com.github.gumtreediff.matchers.Matchers;
 import com.github.gumtreediff.tree.TreeContext;
-import com.github.gumtreediff.actions.PreMatcher;
-
-import java.io.IOException;
-import java.io.Reader;
 
 /**
  * Class to facilitate the computation of diffs between ASTs.
