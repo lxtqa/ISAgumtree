@@ -55,7 +55,6 @@ public abstract class AbstractSubtreeMatcher implements Matcher {
         this.src = src;
         this.dst = dst;
         this.mappings = mappings;
-
         List<Pair<Set<Tree>, Set<Tree>>> ambiguousMappings = new ArrayList<>();
 
         PriorityTreeQueue srcTrees = new DefaultPriorityTreeQueue(src, this.minPriority, this.priorityCalculator);
@@ -69,9 +68,14 @@ public abstract class AbstractSubtreeMatcher implements Matcher {
             localHashMappings.addSrcs(srcTrees.pop());
             localHashMappings.addDsts(dstTrees.pop());
 
-            localHashMappings.unique().forEach(
-                    (pair) -> mappings.addMappingRecursively(
-                            pair.first.stream().findAny().get(), pair.second.stream().findAny().get()));
+            localHashMappings.unique().forEach(pair -> {
+                Tree s = pair.first.stream().findAny().get();
+                Tree d = pair.second.stream().findAny().get();
+                if (s.getFuncId() == d.getFuncId() || d.getFuncId() == -1 || s.getFuncId() == -1) {
+                    mappings.addMappingRecursively(s, d);
+                }
+            });
+
 
             localHashMappings.ambiguous().forEach(
                     (pair) -> ambiguousMappings.add(pair));
@@ -84,9 +88,7 @@ public abstract class AbstractSubtreeMatcher implements Matcher {
 
         // 模糊匹配开始计时
         // long ambiguousStartTime = System.nanoTime();
-
         handleAmbiguousMappings(ambiguousMappings);
-
         // // 模糊匹配结束计时
         // long ambiguousEndTime = System.nanoTime();
 

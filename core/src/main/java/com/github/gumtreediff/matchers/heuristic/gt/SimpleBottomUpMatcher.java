@@ -71,13 +71,14 @@ public class SimpleBottomUpMatcher implements Matcher {
                     }
                 }
 
-                if (best != null) {
+                if (best != null && (t.getFuncId() == best.getFuncId()
+                        || t.getFuncId() == -1 || best.getFuncId() == -1)) {
                     lastChanceMatch(mappings, t, best);
                     mappings.addMapping(t, best);
                 }
             }
             else if (mappings.isSrcMapped(t) && mappings.hasUnmappedSrcChildren(t)
-                       && mappings.hasUnmappedDstChildren(mappings.getDstForSrc(t)))
+                        && mappings.hasUnmappedDstChildren(mappings.getDstForSrc(t)))
                 lastChanceMatch(mappings, t, mappings.getDstForSrc(t));
         }
         return mappings;
@@ -129,8 +130,9 @@ public class SimpleBottomUpMatcher implements Matcher {
         for (int[] x : lcs) {
             var t1 = unmappedSrcChildren.get(x[0]);
             var t2 = unmappedDstChildren.get(x[1]);
-            if (mappings.areSrcsUnmapped(TreeUtils.preOrder(t1)) && mappings.areDstsUnmapped(
+            if ((mappings.areSrcsUnmapped(TreeUtils.preOrder(t1)) && mappings.areDstsUnmapped(
                     TreeUtils.preOrder(t2)))
+                    && (t1.getFuncId() == t2.getFuncId() || t1.getFuncId() == -1 || t2.getFuncId() == -1))
                 mappings.addMappingRecursively(t1, t2);
         }
     }
@@ -151,8 +153,9 @@ public class SimpleBottomUpMatcher implements Matcher {
         for (int[] x : lcs) {
             var t1 = unmappedSrcChildren.get(x[0]);
             var t2 = unmappedDstChildren.get(x[1]);
-            if (mappings.areSrcsUnmapped(
-                    TreeUtils.preOrder(t1)) && mappings.areDstsUnmapped(TreeUtils.preOrder(t2)))
+            if ((mappings.areSrcsUnmapped(
+                    TreeUtils.preOrder(t1)) && mappings.areDstsUnmapped(TreeUtils.preOrder(t2))) 
+                    && (t1.getFuncId() == t2.getFuncId() || t1.getFuncId() == -1 || t2.getFuncId() == -1))
                 mappings.addMappingRecursively(t1, t2);
         }
     }
@@ -178,8 +181,11 @@ public class SimpleBottomUpMatcher implements Matcher {
             if (dstHistogram.containsKey(t) && srcHistogram.get(t).size() == 1 && dstHistogram.get(t).size() == 1) {
                 var srcChild = srcHistogram.get(t).get(0);
                 var dstChild = dstHistogram.get(t).get(0);
-                mappings.addMapping(srcChild, dstChild);
-                lastChanceMatch(mappings, srcChild, dstChild);
+                if (srcChild.getFuncId() == dstChild.getFuncId()
+                        || srcChild.getFuncId() == -1 || dstChild.getFuncId() == -1) {
+                    mappings.addMapping(srcChild, dstChild);
+                    lastChanceMatch(mappings, srcChild, dstChild);
+                }
             }
         }
     }
