@@ -20,10 +20,15 @@
 
 package com.github.gumtreediff.matchers.heuristic.gt;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 
-import com.github.gumtreediff.matchers.*;
+import com.github.gumtreediff.matchers.ConfigurationOptions;
+import com.github.gumtreediff.matchers.GumtreeProperties;
+import com.github.gumtreediff.matchers.MappingStore;
+import com.github.gumtreediff.matchers.Matcher;
 import com.github.gumtreediff.tree.Tree;
 import com.github.gumtreediff.utils.Pair;
 import com.google.common.collect.Sets;
@@ -75,7 +80,6 @@ public abstract class AbstractSubtreeMatcher implements Matcher {
                     mappings.addMappingRecursively(s, d);
                 }
             });
-
 
             localHashMappings.ambiguous().forEach(
                     (pair) -> ambiguousMappings.add(pair));

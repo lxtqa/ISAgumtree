@@ -20,7 +20,11 @@
 
 package com.github.gumtreediff.tree;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Map;
 
 public class FakeTree extends AbstractTree {
     public FakeTree(Tree... trees) {
@@ -42,6 +46,11 @@ public class FakeTree extends AbstractTree {
 
     @Override
     public String getLabel() {
+        return NO_LABEL;
+    }
+
+    @Override
+    public String getIsaLabel() {
         return NO_LABEL;
     }
 

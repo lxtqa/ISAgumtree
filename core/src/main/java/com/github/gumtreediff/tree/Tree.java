@@ -20,7 +20,11 @@
 
 package com.github.gumtreediff.tree;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
@@ -226,6 +230,12 @@ public interface Tree {
      * @see #hasLabel()
      */
     String getLabel();
+
+    /**
+     * Returns the isaLabel of the node. If the node has no label, an empty string is returned.
+     * @see #hasLabel()
+     */
+    String getIsaLabel();
 
     /**
      * Sets the label of the node.

@@ -86,9 +86,9 @@ public class TreeMetricComputer extends TreeVisitor.InnerNodesAndLeavesVisitor {
     }
 
     private static int innerNodeHash(Tree tree, int size, int middleHash) {
-        return Objects.hash(tree.getType(), tree.getLabel(), ENTER)
+        return Objects.hash(tree.getType(), tree.getIsaLabel(), ENTER)
                 + middleHash
-                + Objects.hash(tree.getType(), tree.getLabel(), LEAVE) * hashFactor(size);
+                + Objects.hash(tree.getType(), tree.getIsaLabel(), LEAVE) * hashFactor(size);
     }
 
     private static int innerNodeStructureHash(Tree tree, int size, int middleHash) {

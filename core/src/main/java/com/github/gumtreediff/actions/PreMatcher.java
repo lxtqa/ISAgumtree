@@ -50,6 +50,7 @@ public class PreMatcher {
         List<Tree> srcFuncs = extractFunctionDecls(src.getRoot());
         List<Tree> dstFuncs = extractFunctionDecls(dst.getRoot());
 
+
         // 2. Match functions by name and assign IDs
         Map<String, Integer> functionNameToId = new HashMap<>();
         assignFunctionIds(srcFuncs, dstFuncs, functionNameToId);
@@ -79,7 +80,6 @@ public class PreMatcher {
                 dfsExtract(child, result);
             }
         } catch (Exception e) {
-            // System.err.println("Error at node: " + node.getType() + " Label: " + node.getLabel());
             e.printStackTrace();
         }
     }
@@ -164,13 +164,13 @@ public class PreMatcher {
         String functionName = "";
         for (Tree child : node.getChildren()) {
             if (child.getType() != Type.NO_TYPE && child.getType().toString().equals("name")) {
-                if (child.getLabel() != Tree.NO_LABEL) {
-                    return child.getLabel();
+                if (child.getIsaLabel() != Tree.NO_LABEL) {
+                    return child.getIsaLabel();
                 }
                 else {
                     for (Tree gc : child.getChildren()) {
-                        if (gc.getLabel() != Tree.NO_LABEL)
-                            functionName += gc.getLabel();
+                        if (gc.getIsaLabel() != Tree.NO_LABEL)
+                            functionName += gc.getIsaLabel();
                     }
                     return functionName;
                 }

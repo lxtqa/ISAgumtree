@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 public final class ImmutableTree extends AbstractTree {
     private final String label;
+    private final String isaLabel;
     private final Type type;
 
     private final int pos;
@@ -43,6 +44,7 @@ public final class ImmutableTree extends AbstractTree {
         );
         this.parent = parent;
         label = t.getLabel();
+        isaLabel = t.getIsaLabel();
         type = t.getType();
         pos = t.getPos();
         length = t.getLength();
@@ -70,6 +72,11 @@ public final class ImmutableTree extends AbstractTree {
     @Override
     public String getLabel() {
         return label;
+    }
+
+    @Override
+    public String getIsaLabel() {
+        return isaLabel;
     }
 
     @Override

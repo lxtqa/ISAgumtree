@@ -21,13 +21,17 @@
 package com.github.gumtreediff.tree;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
 
 public class DefaultTree extends AbstractTree implements Tree {
     private Type type;
 
     private String label;
+    private String isaLabel;
 
     private int pos;
     private int length;
@@ -54,7 +58,64 @@ public class DefaultTree extends AbstractTree implements Tree {
     public DefaultTree(Type type, String label) {
         this.type = type;
         this.label = (label == null) ? NO_LABEL : label.intern();
+        this.isaLabel = computeIsaLabel(this.label);
         this.children = new ArrayList<>();
+    }
+
+    private static final List<String> ISA_KEYWORDS = Arrays.asList(
+            // ---- LoongArch ----
+            "loongarch64","loongarch32","loongarch","loong64","loong32","loong",
+
+            // ---- RISC-V ----
+            "riscv64","riscv32","riscv",
+
+            // ---- ARM64 ----
+            "arm64","aarch64",
+
+            // ---- ARM ----
+            "aarch32","aarch","arm",
+
+            // ---- X86 ----
+            "x86_64","x64","x86","ia32","i386",
+
+            // ---- S390 ----
+            "s390x","s390","systemz",
+
+            // ---- PowerPC ----
+            "powerpc64","powerpc32","powerpc","ppc64","ppc32","ppc",
+
+            // ---- MIPS ----
+            "mips64","mips32","mips"
+    );
+
+    private static final Pattern ISA_PATTERN;
+
+    static {
+        // 按长度从大到小排序，避免 riscv 先吃掉 riscv64
+        ISA_KEYWORDS.sort((a, b) -> Integer.compare(b.length(), a.length()));
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("(?i)("); // ignore case
+
+        for (int i = 0; i < ISA_KEYWORDS.size(); i++) {
+            if (i > 0) sb.append("|");
+            sb.append(Pattern.quote(ISA_KEYWORDS.get(i)));
+        }
+
+        sb.append(")");
+        ISA_PATTERN = Pattern.compile(sb.toString());
+    }
+
+    private static String computeIsaLabel(String label) {
+        if (label == null || label.isEmpty())
+            return NO_LABEL;
+
+        String newLabel = ISA_PATTERN.matcher(label).replaceAll("@");
+
+        if (newLabel.equals(label))
+            return label;
+
+        return newLabel.intern();
     }
 
     /**
@@ -65,6 +126,7 @@ public class DefaultTree extends AbstractTree implements Tree {
     protected DefaultTree(Tree other) {
         this.type = other.getType();
         this.label = other.getLabel();
+        this.isaLabel = other.getIsaLabel();
         this.pos = other.getPos();
         this.length = other.getLength();
         this.children = new ArrayList<>();
@@ -81,6 +143,11 @@ public class DefaultTree extends AbstractTree implements Tree {
     @Override
     public String getLabel() {
         return label;
+    }
+
+    @Override
+    public String getIsaLabel() {
+        return isaLabel;
     }
 
     @Override
@@ -101,6 +168,7 @@ public class DefaultTree extends AbstractTree implements Tree {
     @Override
     public void setLabel(String label) {
         this.label = (label == null) ? NO_LABEL : label.intern();
+        this.isaLabel = computeIsaLabel(this.label);
     }
 
     @Override
